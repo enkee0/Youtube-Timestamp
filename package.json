@@ -13,12 +13,13 @@
   "scripts": {
     "dev": "bun run dev:web & bun run dev:api",
     "dev:web": "cd apps/web && bun dev",
-    "dev:api": "cd apps/api && bun run index.ts"
+    "dev:api": "cd apps/api && bun --env-file=.env --hot run index.ts"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "googleapis": "^171.0.0",
     "openai": "^6.17.0"
   }
