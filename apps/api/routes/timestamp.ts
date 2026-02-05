@@ -4,17 +4,30 @@ import { getVideoCaptions } from "../services/youtube.ts";
 const timestamp = new Hono();
 
 timestamp.post("/", async (c) => {
-  const body = await c.req.json<{ videoId: string; accessToken?: string }>();
-  const accessToken = body.accessToken ?? c.req.header("Authorization")?.replace(/^Bearer\s+/i, "");
+  const body = await c.req.json<{
+    videoId: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }>();
+  const accessToken =
+    body.accessToken ??
+    c.req.header("Authorization")?.replace(/^Bearer\s+/i, "");
+  const refreshToken = body.refreshToken;
   const videoId = body.videoId;
-  if (!videoId || !accessToken) {
-    return c.json({ error: "videoId and accessToken (or Authorization header) required" }, 400);
+  if (!videoId || (!accessToken && !refreshToken)) {
+    return c.json(
+      { error: "videoId and accessToken or refreshToken required" },
+      400,
+    );
   }
 
-  const captions = await getVideoCaptions(videoId, accessToken);
-  console.log(captions)
+  const { captions, accessToken: newAccessToken } = await getVideoCaptions(
+    videoId,
+    accessToken,
+    refreshToken,
+  );
   const text = await analyze(captions);
-  return c.json({ chapters: text });
+  return c.json({ chapters: text, accessToken: newAccessToken });
 });
 
 export default timestamp;

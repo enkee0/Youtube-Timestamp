@@ -29,7 +29,11 @@ export default function TimestampPage() {
       typeof window !== "undefined"
         ? localStorage.getItem("yt_access_token")
         : null;
-    if (!accessToken) {
+    const refreshToken =
+      typeof window !== "undefined"
+        ? localStorage.getItem("yt_refresh_token")
+        : null;
+    if (!accessToken && !refreshToken) {
       window.location.href = "http://localhost:4000/auth/login";
       return;
     }
@@ -40,12 +44,15 @@ export default function TimestampPage() {
       const res = await fetch("http://localhost:4000/timestamp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoId, accessToken }),
+        body: JSON.stringify({ videoId, accessToken, refreshToken }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Something went wrong");
         return;
+      }
+      if (data?.accessToken && typeof window !== "undefined") {
+        localStorage.setItem("yt_access_token", data.accessToken);
       }
       const result = data.chapters ?? null;
       setChapters(result);
