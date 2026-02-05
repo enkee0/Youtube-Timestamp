@@ -68,6 +68,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - Built with [Bun](https://bun.sh) - A fast all-in-one JavaScript runtime
 - Powered by TypeScript for enhanced developer experience
+- Front-end is vibe coded
+- Used github models to analyze the captions
 
 ## Support
 
